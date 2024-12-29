@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SquiINT{% endblock %}</title>
+    <link rel="stylesheet" href="../static/assets/css/style.css">
+</head>
+<body>
+    <button class="hamburger">☰</button>
+    <div class="sidebar">
+        <h2>SquiINT</h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Live Graphs</a></li>
+                <li><a href="nodes.html">Connection</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="content">
+        {% block content %}
+        <!-- Page-specific content will be inserted here -->
+        {% endblock %}
+    </div>
+
+    <!-- JavaScript for Sidebar Toggle -->
+    <script>
+        const sidebar = document.querySelector('.sidebar');
+        const hamburger = document.querySelector('.hamburger');
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    </script>
+
+</body>
+</html>

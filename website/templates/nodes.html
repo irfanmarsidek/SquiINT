@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Communication</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.24.0/cytoscape.min.js"></script>
+    <style>
+        #cy {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Network Communication</h1>
+    <div id="cy"></div>
+    <script>
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#0074D9',
+                        'label': 'data(id)',
+                        'color': 'white',
+                        'text-valign': 'center',
+                        'text-outline-width': 2,
+                        'text-outline-color': '#0074D9'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': '#FF4136',
+                        'target-arrow-color': '#FF4136',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier',
+                        'label': 'data(protocol)'
+                    }
+                }
+            ],
+        });
+
+        async function fetchConnections() {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            const response = await fetch(`${baseUrl}/connections`);
+            const connections = await response.json();
+
+            cy.elements().remove(); // Clear existing elements
+            const nodes = new Set();
+            const elements = [];
+
+            connections.forEach(conn => {
+                const { src_ip, dst_ip, protocol, service, flag } = conn;
+                
+                if (!nodes.has(src_ip)) {
+                    elements.push({ data: { id: src_ip } });
+                    nodes.add(src_ip);
+                }
+                if (!nodes.has(dst_ip)) {
+                    elements.push({ data: { id: dst_ip } });
+                    nodes.add(dst_ip);
+                }
+                elements.push({
+                    data: {
+                        source: src_ip,
+                        target: dst_ip,
+                        protocol: protocol,
+                        service: service,
+                        flag: flag,
+                    }
+                });
+            });
+
+            cy.add(elements);
+            cy.layout({ name: 'grid' }).run();
+        }
+
+        setInterval(fetchConnections, 2000); // Fetch new data every 2 seconds
+    </script>
+</body>
+</html>
